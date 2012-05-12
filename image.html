@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script type="text/javascript">
+function fixX(x) { return x * 45; }
+function fixY(y) { return y * 45; }
+
+function on_load() { image3() }
+
+function image3() {
+	var c = "white";
+	place_box("", 0, 1, 5, 0.5, c);
+	place_box("", 5, 1, 5, 0.5, c);
+
+	var c = "#ddd";
+	place_box("", 0, 1, 0.5, 0.5, c);
+	place_text("a<sub>0</sub>", 0, 0, 0.5, 1, "", "bottom");
+
+	place_box("", 5, 1, 0.5, 0.5, c);
+	place_text("a<sub>M</sub>", 5, 0, 0.5, 1, "", "bottom");
+
+	var c = "#FCD9BA";
+	place_box("", 2, 1, 0.5, 0.5, c);
+	place_text("a<sub>i</sub>", 2, 0, 0.5, 1, "", "bottom");
+	place_text("b<sub>0</sub>", 2, 1.5, 0.5, 0.6, "", "bottom");
+
+	place_box("", 2 + 5, 1, 0.5, 0.5, c);
+	place_text("a<sub>i+M</sub>", 2 + 5, 0, 0.5, 1, "", "bottom");
+	place_text("b<sub>M</sub>", 2 + 5, 1.5, 0.5, 0.6, "", "bottom");
+
+	// 波括弧
+	for (var i=0;i<2;i++){
+		var d = place_text("", i*5+0.25, 1.5, 4.5, 1);
+		d.style.borderBottom = "1px solid";
+		d.style.borderRadius = "0 0 50px 50px / 0 0 10px 10px";
+		var x = i*5+5/2;
+		place_text("", x-0.5, 2.5, 0.5, 0.5, "", "", "white");
+		var d = place_box("", x-0.5, 2.5, 0.5, 0.5);
+		d.style.borderWidth = "1px 1px 0 0";
+		d.style.borderRadius = "0 20px 0 0 / 0 20px 0 0";
+		place_text("", x, 2.5, 0.5, 0.5, "", "", "white");
+		var d = place_box("", x, 2.5, 0.5, 0.5);
+		d.style.borderWidth = "1px 0 0 1px";
+		d.style.borderRadius = "20px 20px 0 0 / 20px 0 0 0";
+	}
+	place_text("a<sub>0</sub>からa<sub>M-1</sub>まで", 0, 3, 5, 1);
+	place_text("a<sub>M</sub>からa<sub>2M-1</sub>まで", 5, 3, 5, 1);
+	place_text("並びはまったく同じ", 0, 4, 10, 1);
+}
+function image2() {
+	var name = "a,b,c,d".split(",");
+	[0,1,2,1,2,1,2].forEach(function (v, i) {
+		place_text("a<sub>"+i+"</sub>", i * 2, 0, 1, 1, "middle", "bottom");
+		place_box(name[v], i * 2, 1, 1, 1, hsl(30+15*v,90,85+v*4));
+		place_text("→", i * 2 + 1, 1, 1, 1);
+		place_text("…", i * 2 + 2, 1, 1, 1, "left");
+	});
+}
+function image1() {
+	var name = "a,b,c,d".split(",");
+	[0,1,2,3,0,1,2,3].forEach(function (v, i) {
+		place_text("a<sub>"+i+"</sub>", i * 2, 0, 1, 1, "middle", "bottom");
+		place_box(name[v], i * 2, 1, 1, 1, hsl(30+15*v,90,85+v*4));
+		place_text("→", i * 2 + 1, 1, 1, 1);
+		place_text("…", i * 2 + 2, 1, 1, 1, "left");
+	});
+}
+
+function hsl(h,s,l) {return "hsl("+h+","+s+"%,"+l+"%)" }
+
+function place_box(content, x, y, w, h, color) {
+	return place_box0(content, x, y, w, h, "middle", "middle", "box", color)
+}
+
+function place_text(content, x, y, w, h, posx, posy, color) {
+	return place_box0(content, x, y, w, h, posx, posy, "text", color);
+}
+
+var pos_mapx = {"left":   0, "middle": 0.5, "right": 1},
+    pos_mapy = {"top": 0,  "middle": 0.5, "bottom": 1};
+
+function place_box0(content, x, y, w, h, posx, posy, className, color) {
+	var div = document.createElement("div");
+	document.body.appendChild(div);
+	div.className = className;
+	div.style.left = fixX(x) + "px";
+	div.style.top = fixY(y) + "px";
+	div.style.background = color;
+	var w2 = fixX(w)// - borderSizeX(div);
+	var h2 = fixY(h)// - borderSizeY(div);
+	div.style.width = w2 + "px";
+	div.style.height = h2 + "px";
+	div.innerHTML = '<div>'+content+'</div>';
+	var inner = div.firstChild;
+	inner.style.display = "inline-block";
+	inner.style.marginLeft = (w2 - inner.offsetWidth) * pos_mapx[posx || "middle"] + "px";
+	inner.style.marginTop = (h2 - inner.offsetHeight) * pos_mapy[posy || "middle"] + "px";
+	return div;
+}
+
+function borderSizeX(elem) {
+	var computedStyle = document.defaultView.getComputedStyle(elem, null);
+	var left = parseInt( computedStyle.borderLeftWidth, 10) || 0;
+	var right = parseInt( computedStyle.borderRightWidth, 10) || 0;
+	return left + right;
+}
+
+function borderSizeY(elem) {
+	var computedStyle = document.defaultView.getComputedStyle(elem, null);
+	var top = parseInt( computedStyle.borderTopWidth, 10) || 0;
+	var bottom = parseInt( computedStyle.borderBottomWidth, 10) || 0;
+	return top + bottom;
+}
+
+</script>
+<style type="text/css">
+body {
+	position: relative;
+	margin-left: 30px;
+}
+
+div.box, div.text {
+	position: absolute;
+/*	font-size: small; */
+/*	outline: 1px solid red; */
+}
+
+div.box1 {
+	border: 1px solid #7a9ba0;
+	background: #b8e9f0;
+}
+
+div.box {
+	border: 1px solid;
+}
+</style>
+</head>
+<body onload="on_load()">
+</body>
+</html>
